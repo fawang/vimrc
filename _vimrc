@@ -8,6 +8,9 @@
 " General
 """"""""""""""""""""""""""""""""""""""""
 
+"Pathogen
+execute pathogen#infect()
+
 "Get out of VI's compatible mode..
 set nocompatible
 
@@ -20,8 +23,23 @@ function! MySys()
   endif
 endfunction
 
+"Tab key = 4 spaces
+set softtabstop=4
+"Insert space when hit tab key
+set expandtab
+"Set each indent step to 4 spaces (to match softtabstop)
+set shiftwidth=4
+
+set autoindent
+
+"Get rid of arrow key
+nnoremap <up>    <nop>
+nnoremap <down>  <nop>
+nnoremap <left>  <nop>
+nnoremap <right> <nop>
+
 "Sets how many lines of history VIM har to remember
-set history=500
+set history=1000
 
 " Always use English messages & menu
 "language zh_CN.UTF-8
@@ -204,16 +222,17 @@ if !exists("g:vimrc_loaded")
     syntax enable
 
     " color scheme
+    set background=dark
     if has("gui_running")
         set guioptions-=T
         set guioptions-=m
         set guioptions-=L
         set guioptions-=r
-        colorscheme darkblue_my
+        colorscheme molokai
         "hi normal guibg=#294d4a
         set cursorline
     else
-        colorscheme desert_my
+        colorscheme molokai 
     endif " has
 endif " exists(...)
 
@@ -308,7 +327,9 @@ set noerrorbells
 set novb t_vb=
 
 "show matching bracets
-"set showmatch
+set showmatch
+set matchtime=1
+noremap % v%
 
 "How many tenths of a second to blink
 "set mat=2
@@ -791,6 +812,20 @@ nmap <C-@>d :cs find d <C-R>=expand("<cword>")<CR><CR>
    let g:tagbar_expand = 1
    nmap <silent> <Leader>bb :TagbarToggle<cr>
 
+   """"""""""""""""""""""""""""""
+   " Git Fugitive
+   """"""""""""""""""""""""""""""
+   set statusline=%<%f\ %h%m%r%{fugitive#statusline()}%=%-14.(%l,%c%V%)\ %P
+   if has("autocmd")
+       autocmd BufReadPost fugitive://* set bufhidden=delete
+       
+       " map .. to go up one level
+       autocmd User fugitive
+               \ if fugitive#buffer().type() =~# '^\%(tree\|blob\)$' |
+               \   nnoremap <buffer> .. :edit %:h<CR> |
+               \ endif
+   endif
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Filetype generic
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -900,58 +935,6 @@ nmap <C-@>d :cs find d <C-R>=expand("<cword>")<CR><CR>
 " Mark as loaded
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 let g:vimrc_loaded = 1
-"Pathogen
-execute pathogen#infect()
-
-"Colorscheme
-syntax enable
-set background=dark
-colorscheme molokai
-
-set softtabstop=4
-set expandtab
-
-set autoindent
-set shiftwidth=4
-
-set showmatch
-set matchtime=1
-noremap % v%
-
-"search settings
-set hlsearch
-set incsearch
-"This allows you to use <esc> to clear the highlighted search without turnning off hls
-nnoremap <CR> :noh<CR><CR>
-
-
-set history=1000
-set nobackup
-
-"Get rid of arrow key
-nnoremap <up>    <nop>
-nnoremap <down>  <nop>
-nnoremap <left>  <nop>
-nnoremap <right> <nop>
-
-"autoload vimrc
-if has("autocmd")
-    autocmd! bufwritepost vimrc source $MYVIMRC
-endif
-
-"~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-" Git Fugitive
-"~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-set statusline=%<%f\ %h%m%r%{fugitive#statusline()}%=%-14.(%l,%c%V%)\ %P
-if has("autocmd")
-    autocmd BufReadPost fugitive://* set bufhidden=delete
-    
-    " map .. to go up one level
-    autocmd User fugitive
-            \ if fugitive#buffer().type() =~# '^\%(tree\|blob\)$' |
-            \   nnoremap <buffer> .. :edit %:h<CR> |
-            \ endif
-endif
 
 " Rename tabs to show tab number.
 " (Based on http://stackoverflow.com/questions/5927952/whats-implementation-of-vims-default-tabline-function)
